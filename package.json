@@ -1,0 +1,31 @@
+{
+  "name": "micke-shuiapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mikaeldramatic-ui/Micke-shuiApi.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/mikaeldramatic-ui/Micke-shuiApi/issues"
+  },
+  "homepage": "https://github.com/mikaeldramatic-ui/Micke-shuiApi#readme",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1173.0",
+    "@aws-sdk/lib-dynamodb": "^3.1173.0",
+    "@middy/core": "^7.9.2",
+    "@middy/http-json-body-parser": "^7.9.2",
+    "@middy/util": "^7.9.2",
+    "bcryptjs": "^3.0.3",
+    "jsonwebtoken": "^9.0.3",
+    "zod": "^4.6.7"
+  }
+}
