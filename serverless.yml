@@ -26,6 +26,25 @@ functions:
       - httpApi:
           path: /auth/login
           method: POST
+##Posts##
+  createPost:
+    handler: functions/posts/createPost/index.handler
+    events:
+      - httpApi:
+          path: /posts
+          method: POST
+  getPosts:
+    handler: functions/posts/getPosts/index.handler
+    events:
+      - httpApi:
+          path: /posts
+          method: GET
+  getPost:
+    handler: functions/posts/getPost/index.handler
+    events:
+      - httpApi:
+          path: /posts/{postId}
+          method: GET                
 
 resources:
   Resources:
