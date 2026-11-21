@@ -12,6 +12,21 @@ provider:
     JWT_SECRET: ${file(./config.yml):jwtSecret}
     TABLE_NAME: ShuiTable
 
+functions:
+##Auth##
+  register:
+    handler: functions/auth/register/index.handler
+    events:
+      - httpApi:
+          path: /auth/register
+          method: POST        
+  login:
+    handler: functions/auth/login/index.handler
+    events:
+      - httpApi:
+          path: /auth/login
+          method: POST
+
 resources:
   Resources:
     ShuiTable:
