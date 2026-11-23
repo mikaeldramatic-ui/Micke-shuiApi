@@ -1,4 +1,4 @@
-import { GetCommand, PutCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { GetCommand, PutCommand, QueryCommand, DeleteCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { db, TABLE_NAME } from './client.mjs';
 
 export const createPost = async (post) => {
@@ -65,4 +65,37 @@ export const getPostsByUsername = async (username) => {
     }));
 
     return Items.map(toPost);
-}; 
+};
+
+export const updatePost = async (postId, title, content, updatedAt) => {
+    const { Attributes } = await db.send(new UpdateCommand({
+        TableName: TABLE_NAME,
+        Key: {
+            PK: `POST#${postId}`,
+            SK: `POST#${postId}`
+        },
+        UpdateExpression: 'SET #title = :title, #content = :content, updatedAt = :updatedAt',
+        ExpressionAttributeNames: {
+            '#title': 'title',
+            '#content': 'content',
+        },
+        ExpressionAttributeValues: {
+          ':title': title,
+            ':content': content,
+            ':updatedAt': updatedAt
+        },  
+        ReturnValues: 'ALL_NEW'
+    }));
+
+    return toPost(Attributes);
+};
+
+export const deletePost = async (postId) => {
+    await db.send(new DeleteCommand({
+        TableName: TABLE_NAME,
+        Key: {
+            PK: `POST#${postId}`,
+            SK: `POST#${postId}`
+        }
+    }));
+};

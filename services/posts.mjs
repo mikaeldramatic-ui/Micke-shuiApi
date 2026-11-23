@@ -1,5 +1,5 @@
 import { createError } from '@middy/util';
-import { createPost, getPostById, getAllPosts, getPostsByUsername } from '../database/posts.mjs';
+import { createPost, getPostById, getAllPosts, getPostsByUsername, updatePost, deletePost } from '../database/posts.mjs';
 
 export const createNewPost = async (username, title, content) => {
     const now = new Date().toISOString();
@@ -35,4 +35,14 @@ export const getPost = async (postId) => {
     }
 
     return post;
+};
+
+export const editPost = async (postId, title, content) => {
+    const updatedAt = new Date().toISOString();
+
+    return await updatePost(postId, title, content, updatedAt);
+};
+
+export const removePost = async (postId) => {
+    await deletePost(postId);
 };
