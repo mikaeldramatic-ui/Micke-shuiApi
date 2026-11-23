@@ -44,7 +44,21 @@ functions:
     events:
       - httpApi:
           path: /posts/{postId}
-          method: GET                
+          method: GET
+
+  updatePost:
+    handler: functions/posts/updatePost/index.handler
+    events:
+      - httpApi:
+          path: /posts/{postId}
+          method: PUT
+
+  deletePost:
+    handler: functions/posts/deletePost/index.handler
+    events:
+      - httpApi:
+          path: /posts/{postId}
+          method: DELETE                                
 
 resources:
   Resources:
