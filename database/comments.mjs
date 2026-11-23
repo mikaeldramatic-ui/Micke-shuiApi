@@ -1,4 +1,4 @@
-import { PutCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { PutCommand, QueryCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 import { db, TABLE_NAME } from './client.mjs';
 
 const toComment = (item) => ({
@@ -31,4 +31,23 @@ export const getCommentsByPostId = async (postId) => {
     }));
 
     return Items.map(toComment);
+};
+
+export const deleteCommentsByPostId = async (postId) => {
+    const { Items } = await db.send(new QueryCommand ({
+        TableName: TABLE_NAME,
+        KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+        ExpressionAttributeValues: {
+            ':pk': `POST#${postId}`,
+            ':sk': 'COMMENT#'
+        }
+    }));
+
+    await Promise.all(Items.map((item) => db.send(new DeleteCommand({
+        TableName: TABLE_NAME,
+        Key: {
+            PK: item.PK,
+            SK: item.SK
+        }
+    }))));
 };

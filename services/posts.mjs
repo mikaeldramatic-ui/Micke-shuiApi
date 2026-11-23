@@ -1,3 +1,4 @@
+import { deleteCommentsByPostId } from '../database/comments.mjs';
 import { createError } from '@middy/util';
 import { createPost, getPostById, getAllPosts, getPostsByUsername, updatePost, deletePost } from '../database/posts.mjs';
 import { generateGuestName } from '../utils/guestName.mjs';
@@ -47,5 +48,6 @@ export const editPost = async (postId, title, content) => {
 };
 
 export const removePost = async (postId) => {
+    await deleteCommentsByPostId(postId);
     await deletePost(postId);
 };
