@@ -75,3 +75,56 @@ Comments share the post's partition key, so all comments for a post are fetched 
 
 Protected endpoints require the header `Authorization: Bearer <token>`.
 
+## Getting started
+
+**Prerequisites:** Node.js 24, Serverless Framework v4, and an AWS account.
+
+```bash
+git clone https://github.com/mikaeldramatic-ui/Micke-shuiApi.git
+cd Micke-shuiApi
+npm install
+````
+
+Create an IAM role with access to DynamoDB and CloudWatch Logs. Then create a `config.yml` file in the root folder (it is ignored by Git and must never be committed).
+
+```yaml
+role: arn:aws:iam::<your-account-id>:role/<your-role-name>
+jwtSecret: <a-long-random-string>
+````
+
+The `jwtSecret` is not something you find - you create it yourself. It can be any long random string. Generate one with:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+````
+
+Change `org` in `serverless.yml` to your own Serverless organization, then deploy:
+
+```bash
+serverless deploy
+````
+
+### Testing the API
+
+I tested the API in **Insomnia** with an environment variable `base_url` set to the API URL, and the requests grouped in three folders: **Auth**, **Posts**, and *Comments*.
+
+### Test flow
+
+1. **Register** - `POST /auth/register`
+    ```json
+    { "username": "anna", "password": "Password123!" }
+    ```
+2. **Log in** - `POST /auth/login` with the same body. Copy the `token` from the response.
+3. **Create a post** - `POST /posts`. Add the token under **Auth -> Bearer Token**. Without a token, the post is created as a guest with a random name (e.g. `otter123`).
+```json
+{ "title": "Hello", "content": "My first post" }
+```
+4. **Get posts** - `GET /posts`, `GET /posts?username=anna` or `GET /posts/{postId}`
+5. **Update** - `PUT /posts/{postId}` with token and a new title and content
+6. **Comment** - `POST /posts/{postId}/comments` with token
+```json
+{ "content": "Nice post!" }
+```
+7. **Get comments** - `GET /posts/{postId}/comments`
+8. **Delete** - `DELETE /posts/{postId}` with token (its comments are deleted too)
+
