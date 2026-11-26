@@ -147,6 +147,7 @@ I tested the API in **Insomnia** with an environment variable `base_url` set to 
 | Password regex did not work as expected | The Mac "dead key" turned `^a` into `â` | Press space after `^`|
 | `GET /posts/{postId}` could not find the post | Used `queryStringParameters` instead of `pathParameters` | Read `postId` from `event.pathParameters` |
 | VS Code autocomplete imported `DeleteTableCommand` instead of `UpdateCommand` | Accepted the suggestion too quickly | Removed it - that command could have deleted the whole table! |
+| Malformed JSON returned `422` and a missing body returned `415` | `http-json-body-parser` throws its own status codes, which are not in the API spec | `errorHandler` converts `415` and `422` to `400` |
 
 ## Lessons learned
 
