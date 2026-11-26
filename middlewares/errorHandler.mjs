@@ -3,7 +3,12 @@ import { sendResponse } from '../utils/sendResponse.mjs';
 export const errorHandler = () => ({
   onError: (request) => {
     const error = request.error;
-    const statusCode = error.statusCode || 500;
+    
+    let statusCode = error.statusCode || 500;
+
+    if (statusCode === 415 || statusCode === 422) {
+      statusCode = 400;
+    } 
 
     console.error(error);
 
