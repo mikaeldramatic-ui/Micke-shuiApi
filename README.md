@@ -104,27 +104,55 @@ Change `org` in `serverless.yml` to your own Serverless organization, then deplo
 serverless deploy
 ````
 
-### Testing the API
+## Testing the API
 
-I tested the API in **Insomnia** with an environment variable `base_url` set to the API URL, and the requests grouped in three folders: **Auth**, **Posts**, and *Comments*.
+I tested the API in **Insomnia** with an environment variable `base_url` set to the API URL, and the requests grouped in three folders: **Auth**, **Posts**, and **Comments**.
 
 ### Test flow
 
-1. **Register** - `POST /auth/register`
+1. **Register** -> `POST /auth/register`
     ```json
     { "username": "anna", "password": "Password123!" }
     ```
-2. **Log in** - `POST /auth/login` with the same body. Copy the `token` from the response.
-3. **Create a post** - `POST /posts`. Add the token under **Auth -> Bearer Token**. Without a token, the post is created as a guest with a random name (e.g. `otter123`).
-```json
-{ "title": "Hello", "content": "My first post" }
-```
-4. **Get posts** - `GET /posts`, `GET /posts?username=anna` or `GET /posts/{postId}`
-5. **Update** - `PUT /posts/{postId}` with token and a new title and content
-6. **Comment** - `POST /posts/{postId}/comments` with token
-```json
-{ "content": "Nice post!" }
-```
-7. **Get comments** - `GET /posts/{postId}/comments`
-8. **Delete** - `DELETE /posts/{postId}` with token (its comments are deleted too)
+2. **Log in** -> `POST /auth/login` with the same body. Copy the `token` from the response.
+3. **Create a post** -> `POST /posts`. Add the token under **Auth -> Bearer Token**. Without a token, the post is created as a guest with a random name (e.g. `otter123`).
+   ```json
+   { "title": "Hello", "content": "My first post" }
+   ```
+4. **Get posts** -> `GET /posts`, `GET /posts?username=anna` or `GET /posts/{postId}`
+5. **Update** -> `PUT /posts/{postId}` with token and a new title and content
+6. **Comment** -> `POST /posts/{postId}/comments` with token
+   ```json
+   { "content": "Nice post!" }
+   ```
+7. **Get comments** -> `GET /posts/{postId}/comments`
+8. **Delete** -> `DELETE /posts/{postId}` with token (its comments are deleted too)
 
+### Error cases tested
+
+| Test | Expected |
+|---|---|
+| Register with an existing username | `409 Conflict` |
+| Weak password or invalid body | `400 Bad Request` |
+| Wrong password at login | `401 Unauthorized` |
+| Missing or invalid token on a protected endpoint | `401 Unauthorized` |
+| Edit or delete someone else's post (or a guest post) | `403 Forbidden` |
+| Post that does not exist | `404 Not Found`|
+
+## Troubleshooting
+
+| Problem | Cause | Fix |
+|--|--|--|
+| New posts did not show up in `GET /posts`, but no error was thrown | Typo `GASI2SK` instead of `GSI2SK` - DynamoDB only adds items to an index if the exact attribute name exists | Corrected the spelling |
+| Password regex did not work as expected | The Mac "dead key" turned `^a` into `â` | Press space after `^`|
+| `GET /posts/{postId}` could not find the post | Used `queryStringParameters` instead of `pathParameters` | Read `postId` from `event.pathParameters` |
+| VS Code autocomplete imported `DeleteTableCommand` instead of `UpdateCommand` | Accepted the suggestion too quickly | Removed it - that command could have deleted the whole table! |
+
+## Lessons learned
+
+- **Small typos cause big problems** - in code, in `serverless.yml` and in request bodies. Some errors are silent.
+- **JWT** works like a temporary access card. A short lifetime (1 hour) limits the damage if a token is stolen.
+- **Authentication and Authorization** make sure only the right person can change data.
+- **Middy** keeps handlers clean by moving auth, validation and error handling into reusable middlewares.
+- **A layered folder structure** makes the code easier to read and understand.
+- **Avoid `Scan`** - it reads the whole table and costs more. Designing keys and indexes (PK, SK, GSI1, GSI2) for each access pattern is faster and cheaper.
